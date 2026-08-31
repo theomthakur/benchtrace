@@ -168,3 +168,13 @@ Provider calls in tests are mocked and no API key is required. Please extend `Tr
 Pricing snapshots are data with an effective date. They are not a promise of current vendor pricing; update and version the table when providers change rates. See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 Licensed under the Apache License 2.0. See [LICENSE](LICENSE).
+
+
+---
+
+Sibling project: [agentcassette](https://github.com/theomthakur/agentcassette), deterministic record and replay for agent tests.
+
+Built by Om Thakur ·
+[portfolio](https://theomthakur.github.io/portfolio) ·
+[github](https://github.com/theomthakur) ·
+[linkedin](https://linkedin.com/in/theomthakur)

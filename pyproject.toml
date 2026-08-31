@@ -49,7 +49,6 @@ Homepage = "https://github.com/theomthakur/benchtrace"
 Repository = "https://github.com/theomthakur/benchtrace"
 Issues = "https://github.com/theomthakur/benchtrace/issues"
 Changelog = "https://github.com/theomthakur/benchtrace/blob/main/CHANGELOG.md"
-Issues = "https://github.com/theomthakur/benchtrace/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/benchtrace"]

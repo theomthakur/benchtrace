@@ -1,0 +1,50 @@
+schema_version: "1.0"
+id: calculator-tool-use
+description: Choose a calculator operation and pass typed numeric arguments.
+system_prompt: Never do arithmetic mentally. Use the calculator tool with the exact supplied values.
+prompt_template: "Use calculator with operation '{operation}', a={a}, and b={b}; then report the result."
+step_budget: 3
+tools:
+  - name: calculator
+    description: Apply one arithmetic operation to two numbers.
+    parameters:
+      type: object
+      properties:
+        operation: {type: string, enum: [add, subtract, multiply, divide]}
+        a: {type: number}
+        b: {type: number}
+      required: [operation, a, b]
+      additionalProperties: false
+graders:
+  - type: tool_call
+cases:
+  - id: add-positive
+    input: {operation: add, a: 7, b: 5, tool_results: {calculator: [{arguments: {operation: add, a: 7, b: 5}, result: 12}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: add, a: 7, b: 5}}]}
+  - id: add-negative
+    input: {operation: add, a: -4, b: 9, tool_results: {calculator: [{arguments: {operation: add, a: -4, b: 9}, result: 5}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: add, a: -4, b: 9}}]}
+  - id: subtract-positive
+    input: {operation: subtract, a: 20, b: 8, tool_results: {calculator: [{arguments: {operation: subtract, a: 20, b: 8}, result: 12}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: subtract, a: 20, b: 8}}]}
+  - id: subtract-negative-result
+    input: {operation: subtract, a: 3, b: 11, tool_results: {calculator: [{arguments: {operation: subtract, a: 3, b: 11}, result: -8}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: subtract, a: 3, b: 11}}]}
+  - id: multiply-integers
+    input: {operation: multiply, a: 6, b: 7, tool_results: {calculator: [{arguments: {operation: multiply, a: 6, b: 7}, result: 42}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: multiply, a: 6, b: 7}}]}
+  - id: multiply-zero
+    input: {operation: multiply, a: 0, b: 999, tool_results: {calculator: [{arguments: {operation: multiply, a: 0, b: 999}, result: 0}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: multiply, a: 0, b: 999}}]}
+  - id: divide-even
+    input: {operation: divide, a: 81, b: 9, tool_results: {calculator: [{arguments: {operation: divide, a: 81, b: 9}, result: 9}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: divide, a: 81, b: 9}}]}
+  - id: divide-fraction
+    input: {operation: divide, a: 1, b: 4, tool_results: {calculator: [{arguments: {operation: divide, a: 1, b: 4}, result: 0.25}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: divide, a: 1, b: 4}}]}
+  - id: add-decimals
+    input: {operation: add, a: 1.5, b: 2.25, tool_results: {calculator: [{arguments: {operation: add, a: 1.5, b: 2.25}, result: 3.75}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: add, a: 1.5, b: 2.25}}]}
+  - id: multiply-decimals
+    input: {operation: multiply, a: 2.5, b: 4, tool_results: {calculator: [{arguments: {operation: multiply, a: 2.5, b: 4}, result: 10}]}}
+    expected: {tool_calls: [{name: calculator, arguments: {operation: multiply, a: 2.5, b: 4}}]}

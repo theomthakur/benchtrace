@@ -1,0 +1,48 @@
+schema_version: "1.0"
+id: inventory-tool-use
+description: Look up inventory using exact SKU identifiers.
+system_prompt: Use inventory_lookup before making any availability claim.
+prompt_template: "Check inventory for SKU '{sku}' using inventory_lookup, then answer whether it is available."
+step_budget: 3
+tools:
+  - name: inventory_lookup
+    description: Return stock information for one exact SKU.
+    parameters:
+      type: object
+      properties:
+        sku: {type: string}
+      required: [sku]
+      additionalProperties: false
+graders:
+  - type: tool_call
+cases:
+  - id: widget-red
+    input: {sku: WIDGET-RED, tool_results: {inventory_lookup: [{arguments: {sku: WIDGET-RED}, result: {available: true, quantity: 12}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: WIDGET-RED}}]}
+  - id: widget-blue
+    input: {sku: WIDGET-BLUE, tool_results: {inventory_lookup: [{arguments: {sku: WIDGET-BLUE}, result: {available: false, quantity: 0}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: WIDGET-BLUE}}]}
+  - id: cable-usbc
+    input: {sku: CABLE-USBC-2M, tool_results: {inventory_lookup: [{arguments: {sku: CABLE-USBC-2M}, result: {available: true, quantity: 48}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: CABLE-USBC-2M}}]}
+  - id: cable-lightning
+    input: {sku: CABLE-LTG-1M, tool_results: {inventory_lookup: [{arguments: {sku: CABLE-LTG-1M}, result: {available: true, quantity: 3}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: CABLE-LTG-1M}}]}
+  - id: adapter-eu
+    input: {sku: ADAPTER-EU, tool_results: {inventory_lookup: [{arguments: {sku: ADAPTER-EU}, result: {available: false, quantity: 0}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: ADAPTER-EU}}]}
+  - id: adapter-uk
+    input: {sku: ADAPTER-UK, tool_results: {inventory_lookup: [{arguments: {sku: ADAPTER-UK}, result: {available: true, quantity: 7}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: ADAPTER-UK}}]}
+  - id: stand-aluminum
+    input: {sku: STAND-AL-15, tool_results: {inventory_lookup: [{arguments: {sku: STAND-AL-15}, result: {available: true, quantity: 5}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: STAND-AL-15}}]}
+  - id: keyboard-ansi
+    input: {sku: KEYBOARD-ANSI, tool_results: {inventory_lookup: [{arguments: {sku: KEYBOARD-ANSI}, result: {available: true, quantity: 19}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: KEYBOARD-ANSI}}]}
+  - id: keyboard-iso
+    input: {sku: KEYBOARD-ISO, tool_results: {inventory_lookup: [{arguments: {sku: KEYBOARD-ISO}, result: {available: false, quantity: 0}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: KEYBOARD-ISO}}]}
+  - id: mouse-ergonomic
+    input: {sku: MOUSE-ERGO, tool_results: {inventory_lookup: [{arguments: {sku: MOUSE-ERGO}, result: {available: true, quantity: 31}}]}}
+    expected: {tool_calls: [{name: inventory_lookup, arguments: {sku: MOUSE-ERGO}}]}

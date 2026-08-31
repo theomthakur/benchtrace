@@ -1,0 +1,48 @@
+schema_version: "1.0"
+id: weather-tool-use
+description: Select the weather tool and preserve the requested city exactly.
+system_prompt: You are a careful tool-using assistant. Use the supplied tool before answering.
+prompt_template: "Call the weather tool exactly once with city '{city}', then answer from its result."
+step_budget: 3
+tools:
+  - name: weather
+    description: Return current conditions for a city.
+    parameters:
+      type: object
+      properties:
+        city: {type: string}
+      required: [city]
+      additionalProperties: false
+graders:
+  - type: tool_call
+cases:
+  - id: paris
+    input: {city: Paris, tool_results: {weather: [{arguments: {city: Paris}, result: {condition: sunny, celsius: 22}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Paris}}]}
+  - id: tokyo
+    input: {city: Tokyo, tool_results: {weather: [{arguments: {city: Tokyo}, result: {condition: rain, celsius: 18}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Tokyo}}]}
+  - id: nairobi
+    input: {city: Nairobi, tool_results: {weather: [{arguments: {city: Nairobi}, result: {condition: cloudy, celsius: 24}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Nairobi}}]}
+  - id: reykjavik
+    input: {city: Reykjavik, tool_results: {weather: [{arguments: {city: Reykjavik}, result: {condition: wind, celsius: 7}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Reykjavik}}]}
+  - id: sao-paulo
+    input: {city: Sao Paulo, tool_results: {weather: [{arguments: {city: Sao Paulo}, result: {condition: humid, celsius: 27}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Sao Paulo}}]}
+  - id: seoul
+    input: {city: Seoul, tool_results: {weather: [{arguments: {city: Seoul}, result: {condition: clear, celsius: 20}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Seoul}}]}
+  - id: cairo
+    input: {city: Cairo, tool_results: {weather: [{arguments: {city: Cairo}, result: {condition: dust, celsius: 31}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Cairo}}]}
+  - id: vancouver
+    input: {city: Vancouver, tool_results: {weather: [{arguments: {city: Vancouver}, result: {condition: drizzle, celsius: 14}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Vancouver}}]}
+  - id: mumbai
+    input: {city: Mumbai, tool_results: {weather: [{arguments: {city: Mumbai}, result: {condition: monsoon, celsius: 29}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Mumbai}}]}
+  - id: sydney
+    input: {city: Sydney, tool_results: {weather: [{arguments: {city: Sydney}, result: {condition: breezy, celsius: 19}}]}}
+    expected: {tool_calls: [{name: weather, arguments: {city: Sydney}}]}

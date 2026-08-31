@@ -1,0 +1,78 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "benchtrace"
+version = "0.1.0"
+description = "A trace-first evaluation framework for LLM agents"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "benchtrace contributors" }]
+keywords = ["llm", "agents", "evaluation", "benchmarking"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Typing :: Typed",
+]
+dependencies = [
+  "httpx==0.28.1",
+  "jsonschema==4.25.0",
+  "pydantic==2.11.7",
+  "PyYAML==6.0.2",
+  "scipy==1.16.1",
+  "typing-extensions==4.16.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build==1.3.0",
+  "mypy==1.17.1",
+  "numpy==2.5.2",
+  "pytest==8.4.1",
+  "pytest-asyncio==1.1.0",
+  "ruff==0.12.7",
+  "types-jsonschema==4.25.0.20250809",
+  "types-PyYAML==6.0.12.20250516",
+]
+
+[project.scripts]
+benchtrace = "benchtrace.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/theomthakur/benchtrace"
+Issues = "https://github.com/theomthakur/benchtrace/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/benchtrace"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/benchtrace", "tasks", "tests", "README.md", "LICENSE", "CHANGELOG.md"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["benchtrace"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["numpy", "numpy.*", "scipy", "scipy.*"]
+follow_imports = "skip"
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]

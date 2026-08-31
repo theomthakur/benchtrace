@@ -1,17 +1,45 @@
-# benchtrace [![CI](https://github.com/theomthakur/benchtrace/actions/workflows/ci.yml/badge.svg)](https://github.com/theomthakur/benchtrace/actions/workflows/ci.yml)
+# benchtrace
+
+[![CI](https://github.com/theomthakur/benchtrace/actions/workflows/ci.yml/badge.svg)](https://github.com/theomthakur/benchtrace/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/benchtrace)](https://pypi.org/project/benchtrace/)
+[![Python](https://img.shields.io/pypi/pyversions/benchtrace)](https://pypi.org/project/benchtrace/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+
+**Trace-first evaluation for LLM agents.** One runtime-validated JSONL schema is written by the
+runner and read by everything else: grading, statistics, cost analysis, retrieval evaluation,
+model comparison and HTML reporting.
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e .
-export OPENAI_API_KEY="..."
-export ANTHROPIC_API_KEY="..."
-benchtrace run tasks/ --models gpt-5,claude-opus-5 --repeats 1
-benchtrace cost runs/latest
-benchtrace retrieval runs/latest
-benchtrace report runs/latest
-benchtrace compare runs/latest runs/latest --model-a gpt-5 --model-b claude-opus-5
+pip install benchtrace
 ```
+
+```bash
+export OPENAI_API_KEY="..." ANTHROPIC_API_KEY="..."
+
+benchtrace run tasks/ --models gpt-5,claude-opus-5 --repeats 1
+benchtrace cost runs/latest         # what it cost, per model and per successful result
+benchtrace retrieval runs/latest    # precision@k, recall@k, citation faithfulness
+benchtrace report runs/latest       # one self-contained HTML file
+benchtrace compare runs/a runs/b    # exact McNemar, paired by case
+```
+
+## Statistics you can defend
+
+Pass-rate intervals use the **Wilson score interval**, with exact **Clopper-Pearson** available
+via `method="clopper-pearson"`. A percentile bootstrap is deliberately not used: for Bernoulli
+data its distribution is exactly `Binomial(n, p̂)`, so it collapses to a point whenever every case
+passes or every case fails. `5/5` would report a 95% interval of 100% to 100%, and all-pass is an
+ordinary benchmark outcome. See Brown, Cai and DasGupta (2001).
+
+Paired *differences* between two models are still bootstrapped, which is correct there, because a
+mean of per-case differences is not a boundary-constrained proportion.
+
+Two models are paired by task, case and repeat, then compared with an exact two-sided McNemar
+test rather than independent means. Mismatched case sets are rejected. Every number carries `n`,
+and when the paired-difference interval includes zero the CLI says there is no winner instead of
+picking one.
+
+---
 
 `benchtrace` is a typed, trace-first Python library and CLI for evaluating single-turn LLM calls and multi-step tool-using agents. The runner writes one runtime-validated JSONL schema; grading, statistics, cost analysis, retrieval evaluation, comparisons, and HTML reporting read that same schema.
 

@@ -9,7 +9,7 @@ description = "A trace-first evaluation framework for LLM agents"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"
-authors = [{ name = "benchtrace contributors" }]
+authors = [{ name = "Om Thakur" }]
 keywords = ["llm", "agents", "evaluation", "benchmarking"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -46,6 +46,9 @@ benchtrace = "benchtrace.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/theomthakur/benchtrace"
+Repository = "https://github.com/theomthakur/benchtrace"
+Issues = "https://github.com/theomthakur/benchtrace/issues"
+Changelog = "https://github.com/theomthakur/benchtrace/blob/main/CHANGELOG.md"
 Issues = "https://github.com/theomthakur/benchtrace/issues"
 
 [tool.hatch.build.targets.wheel]

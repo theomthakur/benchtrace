@@ -23,6 +23,14 @@ class ModelPrice(BaseModel):
     input: float = Field(ge=0.0)
     output: float = Field(ge=0.0)
     cached_input: float = Field(default=0.0, ge=0.0)
+    cache_write: float | None = Field(default=None, ge=0.0)
+    cache_write_1h: float | None = Field(default=None, ge=0.0)
+    long_context_threshold: int | None = Field(default=None, gt=0)
+    long_input: float | None = Field(default=None, ge=0.0)
+    long_output: float | None = Field(default=None, ge=0.0)
+    long_cached_input: float | None = Field(default=None, ge=0.0)
+    long_cache_write: float | None = Field(default=None, ge=0.0)
+    long_cache_write_1h: float | None = Field(default=None, ge=0.0)
 
 
 class PricingTable(BaseModel):
@@ -87,10 +95,50 @@ def calculate_cost(
     price = selected.find(provider, model)
     if price is None:
         return CostResult(usd=0.0, priced=False, pricing_version=pricing_version)
-    uncached_input = max(usage.input_tokens - usage.cached_input_tokens, 0)
+    long_context = (
+        price.long_context_threshold is not None
+        and usage.input_tokens > price.long_context_threshold
+    )
+    input_rate = price.long_input if long_context and price.long_input is not None else price.input
+    output_rate = (
+        price.long_output if long_context and price.long_output is not None else price.output
+    )
+    cached_rate = (
+        price.long_cached_input
+        if long_context and price.long_cached_input is not None
+        else price.cached_input
+    )
+    selected_cache_write_rate = (
+        price.long_cache_write
+        if long_context and price.long_cache_write is not None
+        else price.cache_write
+    )
+    cache_write_rate = (
+        selected_cache_write_rate
+        if selected_cache_write_rate is not None
+        else input_rate
+    )
+    selected_cache_write_1h_rate = (
+        price.long_cache_write_1h
+        if long_context and price.long_cache_write_1h is not None
+        else price.cache_write_1h
+    )
+    cache_write_1h_rate = (
+        selected_cache_write_1h_rate
+        if selected_cache_write_1h_rate is not None
+        else cache_write_rate
+    )
+    categorized_input = (
+        usage.cached_input_tokens
+        + usage.cache_write_tokens
+        + usage.cache_write_1h_tokens
+    )
+    uncached_input = max(usage.input_tokens - categorized_input, 0)
     total = (
-        uncached_input * price.input
-        + usage.cached_input_tokens * price.cached_input
-        + usage.output_tokens * price.output
+        uncached_input * input_rate
+        + usage.cached_input_tokens * cached_rate
+        + usage.cache_write_tokens * cache_write_rate
+        + usage.cache_write_1h_tokens * cache_write_1h_rate
+        + usage.output_tokens * output_rate
     ) / 1_000_000
     return CostResult(usd=round(total, 12), priced=True, pricing_version=pricing_version)

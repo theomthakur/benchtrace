@@ -108,12 +108,29 @@ class AnthropicProvider(HTTPProvider):
                     )
                 )
         usage_raw = mapping(root.get("usage", {}), "usage")
+        cache_creation = integer(
+            usage_raw.get("cache_creation_input_tokens"), "cache_creation_input_tokens"
+        )
+        cache_details = mapping(usage_raw.get("cache_creation", {}), "cache_creation")
+        cache_write_1h = integer(
+            cache_details.get("ephemeral_1h_input_tokens"), "ephemeral_1h_input_tokens"
+        )
+        cache_write_5m = integer(
+            cache_details.get("ephemeral_5m_input_tokens"), "ephemeral_5m_input_tokens"
+        )
+        detailed_cache_creation = cache_write_5m + cache_write_1h
+        if detailed_cache_creation < cache_creation:
+            cache_write_5m += cache_creation - detailed_cache_creation
+        cache_read = integer(
+            usage_raw.get("cache_read_input_tokens"), "cache_read_input_tokens"
+        )
+        uncached_input = integer(usage_raw.get("input_tokens"), "input_tokens")
         usage = TokenUsage(
-            input_tokens=integer(usage_raw.get("input_tokens"), "input_tokens"),
+            input_tokens=uncached_input + cache_read + cache_creation,
             output_tokens=integer(usage_raw.get("output_tokens"), "output_tokens"),
-            cached_input_tokens=integer(
-                usage_raw.get("cache_read_input_tokens"), "cache_read_input_tokens"
-            ),
+            cached_input_tokens=cache_read,
+            cache_write_tokens=cache_write_5m,
+            cache_write_1h_tokens=cache_write_1h,
         )
         return WireResult(
             response=TraceResponse(

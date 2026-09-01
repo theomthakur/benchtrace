@@ -58,9 +58,13 @@ class ToolCall(TraceModel):
 class TokenUsage(TraceModel):
     """Provider-reported token accounting."""
 
+    # input_tokens is the complete billable input count. Cached reads and cache
+    # writes are subsets used to apply the correct rate.
     input_tokens: int = Field(default=0, ge=0)
     output_tokens: int = Field(default=0, ge=0)
     cached_input_tokens: int = Field(default=0, ge=0)
+    cache_write_tokens: int = Field(default=0, ge=0)
+    cache_write_1h_tokens: int = Field(default=0, ge=0)
     reasoning_tokens: int = Field(default=0, ge=0)
 
     @property

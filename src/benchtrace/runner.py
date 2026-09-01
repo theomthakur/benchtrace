@@ -152,6 +152,8 @@ def _sum_usage(calls: Sequence[ModelCall]) -> TokenUsage:
         input_tokens=sum(call.usage.input_tokens for call in calls),
         output_tokens=sum(call.usage.output_tokens for call in calls),
         cached_input_tokens=sum(call.usage.cached_input_tokens for call in calls),
+        cache_write_tokens=sum(call.usage.cache_write_tokens for call in calls),
+        cache_write_1h_tokens=sum(call.usage.cache_write_1h_tokens for call in calls),
         reasoning_tokens=sum(call.usage.reasoning_tokens for call in calls),
     )
 

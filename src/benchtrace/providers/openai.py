@@ -118,6 +118,9 @@ class OpenAICompatibleProvider(HTTPProvider):
             input_tokens=integer(usage_raw.get("prompt_tokens"), "prompt_tokens"),
             output_tokens=integer(usage_raw.get("completion_tokens"), "completion_tokens"),
             cached_input_tokens=integer(details.get("cached_tokens"), "cached_tokens"),
+            cache_write_tokens=integer(
+                details.get("cache_write_tokens"), "cache_write_tokens"
+            ),
         )
         return WireResult(
             response=TraceResponse(

@@ -108,7 +108,10 @@ async def test_openai_compatible_adapter_normalizes_response_and_seed() -> None:
                 "usage": {
                     "prompt_tokens": 10,
                     "completion_tokens": 4,
-                    "prompt_tokens_details": {"cached_tokens": 2},
+                    "prompt_tokens_details": {
+                        "cached_tokens": 2,
+                        "cache_write_tokens": 3,
+                    },
                 },
             },
         )
@@ -127,6 +130,7 @@ async def test_openai_compatible_adapter_normalizes_response_and_seed() -> None:
     assert result.response.tool_calls[0].name == "weather"
     assert result.response.tool_calls[0].arguments == {"city": "Paris"}
     assert result.usage.cached_input_tokens == 2
+    assert result.usage.cache_write_tokens == 3
 
 
 @pytest.mark.asyncio
@@ -141,7 +145,16 @@ async def test_anthropic_adapter_normalizes_text_tool_and_usage() -> None:
                     {"type": "tool_use", "id": "tool-1", "name": "lookup", "input": {"q": "x"}},
                 ],
                 "stop_reason": "tool_use",
-                "usage": {"input_tokens": 8, "output_tokens": 5, "cache_read_input_tokens": 2},
+                "usage": {
+                    "input_tokens": 8,
+                    "output_tokens": 5,
+                    "cache_read_input_tokens": 2,
+                    "cache_creation_input_tokens": 7,
+                    "cache_creation": {
+                        "ephemeral_5m_input_tokens": 3,
+                        "ephemeral_1h_input_tokens": 2,
+                    },
+                },
             },
         )
 
@@ -154,7 +167,13 @@ async def test_anthropic_adapter_normalizes_text_tool_and_usage() -> None:
 
     assert result.response.content == "Checking."
     assert result.response.tool_calls[0].arguments == {"q": "x"}
-    assert result.usage == TokenUsage(input_tokens=8, output_tokens=5, cached_input_tokens=2)
+    assert result.usage == TokenUsage(
+        input_tokens=17,
+        output_tokens=5,
+        cached_input_tokens=2,
+        cache_write_tokens=5,
+        cache_write_1h_tokens=2,
+    )
 
 
 @pytest.mark.asyncio

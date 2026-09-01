@@ -133,7 +133,12 @@ benchtrace compare runs/a runs/b
 
 ## Cost, retrieval, and reports
 
-Pricing is loaded from versioned package data (`src/benchtrace/data/pricing-v1.json`), never embedded in clients. `benchtrace cost` reprices every call and reports provider, model, and task totals. Cost per successful result is printed first. Unknown model prices are reported rather than silently estimated.
+Pricing is loaded from versioned package data (`src/benchtrace/data/pricing-v1.json`), never
+embedded in clients. `benchtrace cost` reprices every call and reports provider, model, and task
+totals. The trace keeps uncached input, cache reads, five-minute cache writes, and one-hour cache
+writes separate so provider-specific rates and long-context tiers are not flattened into an
+estimate. Cost per successful result is printed first. Unknown model prices are reported rather
+than silently estimated.
 
 Retrieval metrics operate only on runner traces. `relevant_context_ids` supports precision@k, recall@k, and MRR. Citation faithfulness requires a recorded semantic support verdict; missing context or an unassessed claim is conservatively unsupported rather than guessed from token overlap.
 

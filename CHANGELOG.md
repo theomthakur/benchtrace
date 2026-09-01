@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here. The format follows Keep a Changelog, and releases follow Semantic Versioning.
 
+## [0.1.1] - 2026-09-01
+
+### Fixed
+
+- Provider cost calculations now distinguish cache reads, five-minute cache writes, and
+  one-hour cache writes. Anthropic usage is normalized to a complete billable input count,
+  including cache activity, and long-context pricing tiers are applied where applicable.
+- Updated the bundled pricing snapshot for current OpenAI, Anthropic, and Google models.
+
 ## [0.1.0] - 2026-08-31
 
 ### Fixed

@@ -26,7 +26,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="benchtrace", description="Trace-first evaluation for LLM agents"
     )
-    parser.add_argument("--version", action="version", version="benchtrace 0.1.0")
+    parser.add_argument("--version", action="version", version="benchtrace 0.1.1")
     commands = parser.add_subparsers(dest="command", required=True)
 
     run = commands.add_parser("run", help="run a YAML benchmark suite")
